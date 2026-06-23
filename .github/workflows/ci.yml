@@ -111,27 +111,140 @@ jobs:
         run: npm run test:coverage
 
   # ─── Build Distributables ──────────────────────────────────────────────────
-  build:
-    name: Build ${{ matrix.name }}
+  build-windows:
+    name: Build Windows
     needs: [backend-test, frontend-test]
     if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        include:
-          - os: windows-latest
-            name: Windows
-            build_flag: --win
-            artifact: "release/*.exe"
-          - os: macos-15
-            name: macOS
-            build_flag: --mac
-            artifact: "release/*.dmg"
-          - os: ubuntu-latest
-            name: Linux
-            build_flag: --linux
-            artifact: "release/*.AppImage"
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
 
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-build-${{ hashFiles('electron/package-lock.json', 'electron/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-build-
+
+      - name: Create Python venv for backend (Windows)
+        working-directory: backend
+        shell: pwsh
+        run: |
+          python -m venv .venv
+          .venv\Scripts\pip install --upgrade pip --quiet
+          .venv\Scripts\pip install -r requirements.txt --quiet --no-cache-dir
+
+      - name: Install frontend deps
+        working-directory: electron
+        shell: bash
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            echo "::warning::No package-lock.json found — running npm install instead of npm ci."
+            npm install
+          fi
+
+      - name: Build and package
+        working-directory: electron
+        run: npm run dist -- --win --publish never
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: repodoc-pro-windows
+          path: electron/release/*.exe
+
+      - name: Upload to release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: electron/release/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-macos:
+    name: Build macOS
+    needs: [backend-test, frontend-test]
+    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-build-${{ hashFiles('electron/package-lock.json', 'electron/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-build-
+
+      - name: Create Python venv for backend (macOS)
+        working-directory: backend
+        run: |
+          python3 -m venv .venv
+          .venv/bin/pip install --upgrade pip --quiet
+          .venv/bin/pip install -r requirements.txt --quiet --no-cache-dir
+
+      - name: Install frontend deps
+        working-directory: electron
+        shell: bash
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            echo "::warning::No package-lock.json found — running npm install instead of npm ci."
+            npm install
+          fi
+
+      - name: Build and package
+        working-directory: electron
+        run: npm run dist -- --mac --publish never
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: repodoc-pro-macos
+          path: electron/release/*.dmg
+
+      - name: Upload to release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: electron/release/*.dmg
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-linux:
+    name: Build Linux
+    needs: [backend-test, frontend-test]
+    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -154,27 +267,16 @@ jobs:
             ${{ runner.os }}-npm-build-
 
       - name: Install system deps (Linux)
-        if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update
           sudo apt-get install -y libpango-1.0-0 libcairo2 libpangocairo-1.0-0 fonts-liberation
 
-      - name: Create Python venv for backend (Linux/macOS)
-        if: matrix.os != 'windows-latest'
+      - name: Create Python venv for backend (Linux)
         working-directory: backend
         run: |
           python3 -m venv .venv
           .venv/bin/pip install --upgrade pip --quiet
           .venv/bin/pip install -r requirements.txt --quiet --no-cache-dir
-
-      - name: Create Python venv for backend (Windows)
-        if: matrix.os == 'windows-latest'
-        working-directory: backend
-        shell: pwsh
-        run: |
-          python -m venv .venv
-          .venv\Scripts\pip install --upgrade pip --quiet
-          .venv\Scripts\pip install -r requirements.txt --quiet --no-cache-dir
 
       - name: Install frontend deps
         working-directory: electron
@@ -189,21 +291,21 @@ jobs:
 
       - name: Build and package
         working-directory: electron
-        run: npm run dist ${{ matrix.build_flag }} -- --publish never
+        run: npm run dist -- --linux --publish never
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: repodoc-pro-${{ matrix.os }}
-          path: electron/${{ matrix.artifact }}
+          name: repodoc-pro-linux
+          path: electron/release/*.AppImage
 
       - name: Upload to release
         if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
-          files: electron/${{ matrix.artifact }}
+          files: electron/release/*.AppImage
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
