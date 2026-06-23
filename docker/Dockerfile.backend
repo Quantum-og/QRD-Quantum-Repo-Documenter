@@ -1,11 +1,12 @@
 # ─── Backend Dockerfile ──────────────────────────────────────────────────────
-FROM python:3.11-slim AS backend
+FROM python:3.11-slim-bookworm AS backend
 
 WORKDIR /app
 
 # System dependencies for ReportLab, WeasyPrint, Pillow
+# Note: libgdk-pixbuf2.0-0 was removed in Debian Trixie; use libgdk-pixbuf-2.0-0
 RUN apt-get update && apt-get install -y \
-    libpango-1.0-0 libpangocairo-1.0-0 libcairo2 libgdk-pixbuf2.0-0 \
+    libpango-1.0-0 libpangocairo-1.0-0 libcairo2 libgdk-pixbuf-2.0-0 \
     libffi-dev libssl-dev gcc g++ \
     libpng-dev libjpeg-dev \
     fonts-liberation fonts-dejavu \
