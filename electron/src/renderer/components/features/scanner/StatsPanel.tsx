@@ -29,7 +29,7 @@ export const StatsPanel: React.FC<Props> = ({ stats }) => {
   const summaryCards = [
     { label: 'Total Files', value: stats.totalFiles?.toLocaleString(), icon: <InsertDriveFile />, color: theme.palette.primary.main },
     { label: 'Lines of Code', value: stats.totalLines?.toLocaleString(), icon: <Code />, color: theme.palette.secondary.main },
-    { label: 'Total Size', value: formatSize(stats.totalSizeBytes), icon: <Storage />, color: theme.palette.success.main },
+    { label: 'Total Size', value: formatSize(stats.totalSize), icon: <Storage />, color: theme.palette.success.main },
     { label: 'Languages', value: topLanguages.length, icon: <Analytics />, color: theme.palette.warning.main },
   ];
 
@@ -102,7 +102,7 @@ export const StatsPanel: React.FC<Props> = ({ stats }) => {
             <CardContent>
               <Typography variant="h6" fontWeight={600} gutterBottom>Largest Files</Typography>
               <Stack spacing={0.5}>
-                {(stats.largestFiles || []).slice(0, 8).map((f: any, i: number) => (
+                {(stats.largestFiles || []).slice(0, 8).map((f, i) => (
                   <Stack key={i} direction="row" justifyContent="space-between" alignItems="center">
                     <Typography variant="body2" noWrap sx={{ flex: 1, mr: 1 }} title={f.path}>
                       {f.path?.split('/').pop()}
