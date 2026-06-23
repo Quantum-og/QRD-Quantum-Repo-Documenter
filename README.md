@@ -4,7 +4,97 @@
 
 RepoDoc Pro is a production-grade desktop application that recursively scans a code repository and generates beautifully formatted, syntax-highlighted PDF documentation with optional AI-powered summaries, data visualizations, petroleum well log plots, and a clickable table of contents.
 
-**No API key required to use it.** AI summaries are an optional add-on — everything else (scanning, syntax-highlighted PDFs, CSV/Excel previews, petroleum plots, statistics) works out of the box.
+**No API key required to use it.** AI summaries are an optional add-on — everything else works out of the box.
+
+---
+
+## 📥 Installing the App (End Users)
+
+> **You do not need Python, Node.js, or Docker to install and run RepoDoc Pro.**
+> Everything is bundled inside the installer.
+
+Download the latest release from the [**Releases page**](../../releases/latest).
+
+---
+
+### 🪟 Windows
+
+**Requirements:** Windows 10 or later (64-bit)
+
+1. Download **`RepoDoc-Pro-x.x.x-Setup.exe`** from the Releases page
+2. Double-click the installer
+3. Follow the on-screen steps (Next → Next → Install → Finish)
+4. Launch **RepoDoc Pro** from the Start Menu or Desktop shortcut
+
+> **First launch only:** If Python is not bundled, a one-time setup screen will appear:
+> *"Setting Up RepoDoc Pro — Installing packages…"*
+> This takes 1–3 minutes. Do not close the app during this step.
+>
+> If setup fails with a Python error, download Python 3.10+ from [python.org/downloads](https://www.python.org/downloads/) *(check "Add Python to PATH" during install)*, then restart RepoDoc Pro.
+
+**Windows SmartScreen warning?**
+Click **More info → Run anyway**. This appears because the app is not yet code-signed with a paid certificate — it is safe.
+
+---
+
+### 🍎 macOS
+
+**Requirements:** macOS 12 Monterey or later (Intel or Apple Silicon)
+
+1. Download **`RepoDoc-Pro-x.x.x.dmg`** (Intel) or **`RepoDoc-Pro-x.x.x-arm64.dmg`** (Apple Silicon / M1/M2/M3) from the Releases page
+2. Open the `.dmg` file
+3. Drag **RepoDoc Pro** into the **Applications** folder
+4. Open **Launchpad** or **Finder → Applications** and launch RepoDoc Pro
+
+> **"RepoDoc Pro cannot be opened because it is from an unidentified developer"?**
+> Right-click (or Control-click) the app → **Open** → **Open** again in the dialog.
+> This is a macOS Gatekeeper warning for unsigned apps — it only appears once.
+
+> **First launch only:** Same as Windows — a setup screen may appear briefly while Python packages are installed.
+
+---
+
+### 🐧 Linux
+
+**Requirements:** Ubuntu 20.04+ / Debian 11+ or any modern distro with glibc 2.31+
+
+#### Option A — AppImage (recommended, works on any distro)
+
+1. Download **`RepoDoc-Pro-x.x.x.AppImage`** from the Releases page
+2. Open a terminal and make it executable:
+   ```bash
+   chmod +x RepoDoc-Pro-x.x.x.AppImage
+   ```
+3. Run it:
+   ```bash
+   ./RepoDoc-Pro-x.x.x.AppImage
+   ```
+4. *(Optional)* Double-click to run from your file manager — you may need to enable **"Allow executing file as program"** in file properties first
+
+#### Option B — Debian/Ubuntu `.deb` package
+
+1. Download **`repodoc-pro_x.x.x_amd64.deb`** from the Releases page
+2. Install it:
+   ```bash
+   sudo dpkg -i repodoc-pro_x.x.x_amd64.deb
+   ```
+3. Launch from your application menu or run:
+   ```bash
+   repodoc-pro
+   ```
+
+> **First launch only:** A setup screen may appear while Python packages are installed. If it fails, make sure Python 3.10+ is installed:
+> ```bash
+> # Ubuntu/Debian
+> sudo apt install python3 python3-venv
+>
+> # Fedora/RHEL
+> sudo dnf install python3
+>
+> # Arch
+> sudo pacman -S python
+> ```
+> Then restart RepoDoc Pro.
 
 ---
 
@@ -99,12 +189,14 @@ Search by filename, extension, or file content across the project.
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Developer Quick Start
+
+> This section is for contributors and developers. End users should use the [installer](#-installing-the-app-end-users) above.
 
 ### Requirements
 
 - **Python** 3.10 or higher
-- **Node.js** 18 or higher *(only needed for the Electron desktop app — the backend runs standalone as a REST API without it)*
+- **Node.js** 18 or higher
 
 ### 1. Clone & Setup
 
@@ -113,7 +205,7 @@ git clone https://github.com/your-org/repodoc-pro.git
 cd repodoc-pro
 ```
 
-**Linux (any distro)** — auto-detects your package manager (`apt`, `pacman`, `dnf`, `yum`, `zypper`, `apk`, `xbps`, `emerge`, `eopkg`, `nix`); if more than one is found, you'll be prompted to choose:
+**Linux / macOS:**
 
 ```bash
 bash scripts/setup_dev.sh
@@ -123,12 +215,6 @@ bash scripts/setup_dev.sh
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\setup_dev.ps1
-```
-
-**macOS:**
-
-```bash
-bash scripts/setup_dev.sh
 ```
 
 The script creates a Python virtual environment, installs all backend dependencies, sets up `backend/.env`, and optionally installs the Electron frontend dependencies and runs the test suite.
@@ -145,8 +231,6 @@ ANTHROPIC_API_KEY=sk-ant-...
 # or
 OPENAI_API_KEY=sk-...
 ```
-
-Without a key, exports work normally — AI summary sections are simply omitted.
 
 ### 3. Start the Backend
 
@@ -167,9 +251,7 @@ Expected response:
 {"status":"ok","version":"1.0.0","timestamp":"...","python":"..."}
 ```
 
-> **Note:** the root URL `/` will always return `{"detail":"Not Found"}` — that's expected. Use `/health`, `/docs`, or any of the routes listed in the [API Reference](#-api-reference) below.
-
-Interactive API docs (development mode only): **http://localhost:8765/docs**
+> Interactive API docs (development mode only): **http://localhost:8765/docs**
 
 ### 4. Start the Frontend (Desktop App)
 
@@ -183,20 +265,16 @@ cd electron
 npx wait-on http://localhost:5173 && npx electron .
 ```
 
-> Don't need the desktop UI? Skip this step entirely and call the backend directly as a REST API (see [API Reference](#-api-reference)).
-
 ---
 
-## 🐙 Running in GitHub Codespaces / Remote Dev Containers
-
-The backend works fine in Codespaces — your forwarded URL replaces `localhost`:
+## 🐙 Running in GitHub Codespaces
 
 ```bash
 cd backend
 REPODOC_ENV=development python src/main.py --port 8765 --reload
 ```
 
-Then open the forwarded port URL (shown in the **Ports** tab) and append the route, e.g.:
+Then open the forwarded port URL (shown in the **Ports** tab):
 
 ```
 https://<your-codespace-name>-8765.app.github.dev/health
@@ -207,21 +285,19 @@ https://<your-codespace-name>-8765.app.github.dev/docs
 
 ## 🛠️ Manual Installation
 
-If you'd rather not use the setup script:
-
 ```bash
 cd backend
 python3 -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 
-pip install -r requirements.txt    # Note the -r flag — required to read the file
+pip install -r requirements.txt    # Note the -r flag — required
 
-cp .env.example .env               # then edit .env as needed
+cp .env.example .env               # edit .env as needed
 
 python src/main.py --port 8765 --reload
 ```
 
-> **Common mistake:** running `pip install requirements.txt` (without `-r`) will fail with *"Could not find a version that satisfies the requirement requirements.txt"*. Always use `pip install -r requirements.txt`.
+> **Common mistake:** running `pip install requirements.txt` (without `-r`) will fail. Always use `pip install -r requirements.txt`.
 
 For the frontend:
 
@@ -265,12 +341,12 @@ repodoc-pro/
 │   │   │       ├── pdf/         # PDFBuilder, SyntaxCodeBlock, FileHeaderBlock
 │   │   │       ├── parsers/     # CSVParser, ExcelParser, CodeParser, ImageParser
 │   │   │       ├── petroleum/   # LASParser, ProductionCSVParser
-│   │   │       ├── ai/          # AIDocumenter (Claude/OpenAI/Stub — key optional)
+│   │   │       ├── ai/          # AIDocumenter (Claude/OpenAI/Stub)
 │   │   │       └── storage/     # TempManager
 │   │   └── utils/               # Settings (pydantic), logging
 │   ├── tests/
-│   │   ├── unit/                # test_scanner_service, test_pdf_builder, test_parsers
-│   │   └── integration/         # test_api_routes (httpx AsyncClient)
+│   │   ├── unit/
+│   │   └── integration/
 │   ├── requirements.txt
 │   ├── .env.example
 │   └── pytest.ini
@@ -286,7 +362,7 @@ repodoc-pro/
 │   └── DEPLOYMENT.md
 │
 ├── scripts/
-│   ├── setup_dev.sh             # Universal Linux/macOS setup (auto-detects distro + package manager)
+│   ├── setup_dev.sh             # Universal Linux/macOS setup
 │   └── setup_dev.ps1            # Windows PowerShell setup
 │
 └── .github/workflows/ci.yml     # CI/CD: test → build → release → Docker
@@ -295,8 +371,6 @@ repodoc-pro/
 ---
 
 ## 🔌 API Reference
-
-The FastAPI backend exposes a REST + WebSocket API on `localhost:8765` (or your forwarded Codespaces URL).
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -308,41 +382,15 @@ The FastAPI backend exposes a REST + WebSocket API on `localhost:8765` (or your 
 | `GET` | `/export/{id}/status` | Poll job status |
 | `POST` | `/export/{id}/cancel` | Cancel a running job |
 | `WS` | `/export/ws/{id}` | Real-time export progress |
-| `POST` | `/ai/document` | Generate AI docs for a file *(works without a key — returns a stub)* |
+| `POST` | `/ai/document` | Generate AI docs for a file |
 | `GET` | `/ai/status` | Check AI provider configuration |
 | `GET` | `/search/` | Search files by name/extension/content |
 | `GET` | `/petroleum/las/parse` | Parse a LAS well log file |
-| `GET` | `/petroleum/las/quicklook` | Generate quick-look plot (PNG path) |
+| `GET` | `/petroleum/las/quicklook` | Generate quick-look plot |
 | `GET` | `/petroleum/production/parse` | Parse production CSV |
 | `GET` | `/petroleum/production/plot` | Generate rate plots |
 
-> Full interactive docs at `http://localhost:8765/docs` (development mode only — set `REPODOC_ENV=development`)
-
-**Example: scan a project**
-
-```bash
-curl -X POST http://localhost:8765/scanner/scan \
-  -H "Content-Type: application/json" \
-  -d '{"path": "/path/to/your/project"}'
-```
-
-**Example: check AI status**
-
-```bash
-curl http://localhost:8765/ai/status
-```
-
-```json
-{
-  "enabled": true,
-  "available": false,
-  "provider": "none",
-  "model": null,
-  "has_anthropic_key": false,
-  "has_openai_key": false,
-  "message": "No API key configured — exports work normally, AI summaries will be skipped."
-}
-```
+> Full interactive docs at `http://localhost:8765/docs` (set `REPODOC_ENV=development`)
 
 ---
 
@@ -356,13 +404,10 @@ pytest
 # Backend — specific suites
 pytest tests/unit/
 pytest tests/integration/
-pytest tests/unit/test_pdf_builder.py -v
 
 # Frontend — Redux slices
 cd electron
 npm test
-
-# Frontend — with coverage report
 npm run test:coverage
 ```
 
@@ -373,17 +418,14 @@ Target: **80%+ backend coverage**, **unit tests for all Redux slices**.
 ## 🏗️ Building for Distribution
 
 ```bash
-# All platforms (run on the target OS)
 cd electron
-npm run dist
 
-# Platform-specific
 npm run dist:win      # → release/*.exe
 npm run dist:mac      # → release/*.dmg
 npm run dist:linux    # → release/*.AppImage + *.deb
 ```
 
-See [DEPLOYMENT.md](docs/DEPLOYMENT.md) for code signing, auto-updates, and Docker deployment.
+Releases are built automatically via CI when a GitHub Release is published. See [DEPLOYMENT.md](docs/DEPLOYMENT.md) for code signing and Docker deployment.
 
 ---
 
@@ -399,10 +441,8 @@ See [DEPLOYMENT.md](docs/DEPLOYMENT.md) for code signing, auto-updates, and Dock
 | `REPODOC_TEMP_DIR` | `~/.repodoc/temp` | Temp directory |
 | `REPODOC_MAX_FILE_SIZE_MB` | `50` | Max file size to process |
 | `ANTHROPIC_API_KEY` | *(none)* | **Optional** — enables Claude AI summaries |
-| `OPENAI_API_KEY` | *(none)* | **Optional** — OpenAI fallback for AI summaries |
+| `OPENAI_API_KEY` | *(none)* | **Optional** — OpenAI fallback |
 | `REPODOC_AI_MODEL` | `claude-3-5-haiku-20241022` | AI model (only used if a key is set) |
-
-> Neither AI key is required. Leave both blank to use RepoDoc Pro with AI features fully disabled — every other export feature still works.
 
 ### Default Exclude Patterns
 
@@ -415,9 +455,7 @@ Add custom patterns in **Settings → Scanner Exclude Patterns**.
 
 ## 🐧 Linux Distro Support
 
-`scripts/setup_dev.sh` works across all major Linux families by auto-detecting available package managers:
-
-| Distro Family | Package Manager Used |
+| Distro Family | Package Manager |
 |---|---|
 | Arch, Manjaro, EndeavourOS | `pacman` |
 | Debian, Ubuntu, Mint, Pop!_OS | `apt` |
@@ -428,9 +466,7 @@ Add custom patterns in **Settings → Scanner Exclude Patterns**.
 | Void Linux | `xbps` |
 | Gentoo | `emerge` |
 | Solus | `eopkg` |
-| NixOS / Nix (any distro) | `nix` |
-
-If your system has more than one package manager available, the script presents a menu so you can choose which one to use. If none are found, system dependency installation is skipped and you're prompted to install Python 3.10+, Node.js 18+, and `pango`/`cairo` manually.
+| NixOS / Nix | `nix` |
 
 ---
 
@@ -438,7 +474,7 @@ If your system has more than one package manager available, the script presents 
 
 - [ ] DLIS/LIS petroleum format support
 - [ ] Dependency graph export (NetworkX → PDF diagram)
-- [ ] Architecture diagram auto-generation (module/package view)
+- [ ] Architecture diagram auto-generation
 - [ ] Git history integration (commit log, blame)
 - [ ] Custom PDF templates / branding
 - [ ] Team/cloud mode (share scans)
@@ -454,7 +490,7 @@ If your system has more than one package manager available, the script presents 
 4. Ensure all tests pass: `pytest` + `npm test`
 5. Submit a pull request
 
-See [DEVELOPER_GUIDE.md](docs/developer-guide/DEVELOPER_GUIDE.md) for architecture details and adding new file type parsers.
+See [DEVELOPER_GUIDE.md](docs/developer-guide/DEVELOPER_GUIDE.md) for architecture details.
 
 ---
 
@@ -462,11 +498,14 @@ See [DEVELOPER_GUIDE.md](docs/developer-guide/DEVELOPER_GUIDE.md) for architectu
 
 | Symptom | Fix |
 |---|---|
+| Windows SmartScreen blocks installer | Click **More info → Run anyway** |
+| macOS "unidentified developer" error | Right-click the app → **Open** → **Open** |
+| Linux AppImage won't run | Run `chmod +x RepoDoc-Pro-*.AppImage` first |
+| "Backend unavailable" on first launch | Wait for the setup screen to finish, or install Python 3.10+ and restart |
 | `pip install requirements.txt` fails | Use `pip install -r requirements.txt` (missing `-r` flag) |
-| `python: can't open file 'src/main.py'` | You're not in the `backend/` folder — run `cd backend` first |
-| `{"detail":"Not Found"}` at root URL | Expected — try `/health` or `/docs` instead of `/` |
-| `/ai/status` shows `available: false` | Normal without an API key — add one to `backend/.env` to enable, or ignore it entirely |
-| Backend won't start — missing pango/cairo | Re-run `scripts/setup_dev.sh` and choose your package manager when prompted |
+| `{"detail":"Not Found"}` at root URL | Expected — use `/health` or `/docs` instead |
+| `/ai/status` shows `available: false` | Normal without an API key — add one to `backend/.env` to enable |
+| Backend won't start — missing pango/cairo | Re-run `scripts/setup_dev.sh` |
 
 ---
 
