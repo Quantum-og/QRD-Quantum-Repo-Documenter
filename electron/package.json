@@ -27,8 +27,17 @@
     "lint:fix": "eslint src --ext .ts,.tsx --fix",
     "typecheck": "tsc --noEmit"
   },
-  "keywords": ["pdf", "documentation", "code", "electron", "developer-tools"],
-  "author": "RepoDoc Pro",
+  "keywords": [
+    "pdf",
+    "documentation",
+    "code",
+    "electron",
+    "developer-tools"
+  ],
+  "author": {
+    "name": "RepoDoc Pro",
+    "email": "support@repodoc.pro"
+  },
   "license": "MIT",
   "devDependencies": {
     "@types/node": "20.11.5",
@@ -77,7 +86,7 @@
   "build": {
     "appId": "com.repodoc.pro",
     "productName": "RepoDoc Pro",
-    "copyright": "Copyright © 2024",
+    "copyright": "Copyright \u00a9 2024",
     "directories": {
       "buildResources": "resources",
       "output": "release"
@@ -90,28 +99,65 @@
       {
         "from": "../backend",
         "to": "backend",
-        "filter": ["**/*", "!**/__pycache__/**", "!**/*.pyc"]
+        "filter": [
+          "**/*",
+          "!**/__pycache__/**",
+          "!**/*.pyc"
+        ]
       }
     ],
     "win": {
-      "target": [{"target": "nsis", "arch": ["x64"]}],
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
       "icon": "resources/icon.ico"
     },
     "mac": {
-      "target": [{"target": "dmg", "arch": ["x64", "arm64"]}],
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
       "icon": "resources/icon.icns",
       "category": "public.app-category.developer-tools"
     },
     "linux": {
-      "target": [{"target": "AppImage", "arch": ["x64"]}, {"target": "deb", "arch": ["x64"]}],
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
       "icon": "resources/icon.png",
-      "category": "Development"
+      "category": "Development",
+      "maintainer": "RepoDoc Pro <support@repodoc.pro>"
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "installerIcon": "resources/icon.ico",
       "uninstallerIcon": "resources/icon.ico"
+    },
+    "publish": {
+      "provider": "github",
+      "releaseType": "release"
     }
   }
 }
