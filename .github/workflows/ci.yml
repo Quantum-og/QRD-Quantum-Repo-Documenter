@@ -186,7 +186,7 @@ jobs:
 
       - name: Build and package
         working-directory: electron
-        run: npm run dist ${{ matrix.build_flag }}
+        run: npm run dist ${{ matrix.build_flag }} -- --publish never
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
