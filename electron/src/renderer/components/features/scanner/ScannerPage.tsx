@@ -1,12 +1,11 @@
 import React, { useState, useCallback } from 'react';
 import {
-  Box, Grid, Paper, Typography, TextField, InputAdornment,
-  IconButton, Chip, Stack, Button, ToggleButtonGroup,
+  Box, Grid, Typography, TextField, InputAdornment,
+  IconButton, Chip, Stack, ToggleButtonGroup,
   ToggleButton, Tooltip, useTheme, alpha, CircularProgress,
 } from '@mui/material';
 import {
-  Search, Clear, ViewList, AccountTree, BarChart,
-  FolderOpen, ContentCopy, OpenInNew,
+  Search, Clear, ViewList, AccountTree, BarChart, FolderOpen,
 } from '@mui/icons-material';
 import { useAppSelector, useAppDispatch } from '../../../store/hooks';
 import { setSearchQuery, setViewMode, setSelectedFile } from '../../../store/slices/scannerSlice';
@@ -18,7 +17,7 @@ import { apiClient } from '../../../utils/apiClient';
 export const ScannerPage: React.FC = () => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
-  const { fileTree, flatFiles, stats, isLoaded, path } = useAppSelector((s) => s.project);
+  const { fileTree, flatFiles, stats, isLoaded } = useAppSelector((s) => s.project);
   const { searchQuery, viewMode, selectedFilePath } = useAppSelector((s) => s.scanner);
   const [loadingFile, setLoadingFile] = useState(false);
 
