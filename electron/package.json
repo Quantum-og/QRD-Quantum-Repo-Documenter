@@ -102,7 +102,11 @@
         "filter": [
           "**/*",
           "!**/__pycache__/**",
-          "!**/*.pyc"
+          "!**/*.pyc",
+          "!**/tests/**",
+          "!**/.pytest_cache/**",
+          "!**/coverage_html/**",
+          "!**/coverage.xml"
         ]
       }
     ],
@@ -158,6 +162,7 @@
     "publish": {
       "provider": "github",
       "releaseType": "release"
-    }
+    },
+    "extraMetadata": {}
   }
 }
