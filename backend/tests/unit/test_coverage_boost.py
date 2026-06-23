@@ -217,6 +217,67 @@ class TestExcelParser:
         assert result["sheets"][0]["headers"] == ["Name", "Value", "Category"]
 
 
+# ─── TempManager ─────────────────────────────────────────────────────────────
+
+class TestTempManager:
+    """Tests for TempManager initialize and cleanup lifecycle."""
+
+    @pytest.mark.asyncio
+    async def test_initialize_creates_directory(self, tmp_path: Path):
+        from core.infrastructure.storage.temp_manager import TempManager
+        target = tmp_path / "nested" / "temp"
+        mgr = TempManager(target)
+        await mgr.initialize()
+        assert target.exists()
+        assert target.is_dir()
+
+    @pytest.mark.asyncio
+    async def test_initialize_idempotent(self, tmp_path: Path):
+        from core.infrastructure.storage.temp_manager import TempManager
+        target = tmp_path / "temp"
+        mgr = TempManager(target)
+        await mgr.initialize()
+        await mgr.initialize()  # second call must not raise
+        assert target.exists()
+
+    @pytest.mark.asyncio
+    async def test_cleanup_removes_directory(self, tmp_path: Path):
+        from core.infrastructure.storage.temp_manager import TempManager
+        target = tmp_path / "temp"
+        target.mkdir()
+        (target / "artifact.txt").write_text("x")
+        mgr = TempManager(target)
+        await mgr.cleanup()
+        assert not target.exists()
+
+    @pytest.mark.asyncio
+    async def test_cleanup_nonexistent_does_not_raise(self, tmp_path: Path):
+        from core.infrastructure.storage.temp_manager import TempManager
+        mgr = TempManager(tmp_path / "no_such_dir")
+        await mgr.cleanup()  # must not raise
+
+
+# ─── Settings properties ──────────────────────────────────────────────────────
+
+class TestSettingsProperties:
+    """Tests for Settings computed properties (lines 63, 67)."""
+
+    def test_is_development_true(self):
+        from utils.config import Settings
+        s = Settings(REPODOC_ENV="development")
+        assert s.is_development is True
+
+    def test_is_development_false(self):
+        from utils.config import Settings
+        s = Settings(REPODOC_ENV="production")
+        assert s.is_development is False
+
+    def test_max_file_size_bytes(self):
+        from utils.config import Settings
+        s = Settings(REPODOC_MAX_FILE_SIZE_MB=10)
+        assert s.max_file_size_bytes == 10 * 1024 * 1024
+
+
 # ─── ImageParser ─────────────────────────────────────────────────────────────
 
 class TestImageParser:
