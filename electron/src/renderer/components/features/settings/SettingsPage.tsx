@@ -1,17 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Box, Card, CardContent, Typography, TextField, Button, Switch,
-  FormControlLabel, Divider, Stack, Chip, Alert, Grid, IconButton,
-  InputAdornment, useTheme,
+  FormControlLabel, Stack, Chip, Alert, IconButton,
+  InputAdornment,
 } from '@mui/material';
 import { Visibility, VisibilityOff, Save, DarkMode, LightMode, RestartAlt } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { toggleTheme } from '../../../store/slices/uiSlice';
-import { addExcludePattern, removeExcludePattern, setExcludePatterns } from '../../../store/slices/projectSlice';
+import { addExcludePattern, removeExcludePattern } from '../../../store/slices/projectSlice';
 import { addNotification } from '../../../store/slices/uiSlice';
 
 export const SettingsPage: React.FC = () => {
-  const theme = useTheme();
   const dispatch = useAppDispatch();
   const currentTheme = useAppSelector((s) => s.ui.theme);
   const excludePatterns = useAppSelector((s) => s.project.excludePatterns);
