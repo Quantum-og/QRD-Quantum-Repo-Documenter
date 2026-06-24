@@ -161,7 +161,7 @@ export const BackendStatus: React.FC = () => {
                 <li>Click the button below to open <strong>python.org/downloads</strong></li>
                 <li>Download <strong>Python 3.11</strong> (or newer)</li>
                 <li>Run the installer</li>
-                <li style={{ color: '#d32f2f' }}><strong>⚠️ Check "Add Python to PATH"</strong> before clicking Install</li>
+                <li style={{ color: '#d32f2f' }}><strong>⚠️ Check &quot;Add Python to PATH&quot;</strong> before clicking Install</li>
                 <li>Restart RepoDoc Pro</li>
               </ol>
             </Alert>
@@ -178,7 +178,7 @@ export const BackendStatus: React.FC = () => {
                     brew install python3
                   </code>
                 </li>
-                <li>If you don't have Homebrew, click the button below to download Python directly</li>
+                <li>If you don&apos;t have Homebrew, click the button below to download Python directly</li>
                 <li>Restart RepoDoc Pro</li>
               </ol>
             </Alert>
