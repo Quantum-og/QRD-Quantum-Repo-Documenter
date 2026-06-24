@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from './useAppDispatch';
 import { toggleTheme, setUpdateAvailable, setUpdateDownloaded } from '../store/slices/uiSlice';
-import { setProjectPath, scanProject } from '../store/slices/projectSlice';
+import { setProjectPath } from '../store/slices/projectSlice';
 import { addNotification } from '../store/slices/uiSlice';
 
 export const useElectronEvents = () => {
