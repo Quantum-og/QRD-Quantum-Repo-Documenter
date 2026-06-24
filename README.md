@@ -26,14 +26,19 @@ Download the latest release from the [**Releases page**](../../releases/latest).
 3. Follow the on-screen steps (Next → Next → Install → Finish)
 4. Launch **RepoDoc Pro** from the Start Menu or Desktop shortcut
 
-> **First launch only:** If Python is not bundled, a one-time setup screen will appear:
-> *"Setting Up RepoDoc Pro — Installing packages…"*
-> This takes 1–3 minutes. Do not close the app during this step.
->
-> If setup fails with a Python error, download Python 3.10+ from [python.org/downloads](https://www.python.org/downloads/) *(check "Add Python to PATH" during install)*, then restart RepoDoc Pro.
+**First launch — Python setup:**
+
+If Python is not already installed, you will see a red screen saying **"Python Not Found"** with step-by-step instructions. Here is what to do:
+
+1. Click **Download Python** inside the app (or go to [python.org/downloads](https://www.python.org/downloads/))
+2. Download **Python 3.11** or newer
+3. Run the installer
+4. ⚠️ **Check "Add Python to PATH"** before clicking Install — this is critical
+5. Click **Retry** inside RepoDoc Pro — it will set itself up automatically (1–3 minutes)
+6. Do not close the app while it says "Setting up…"
 
 **Windows SmartScreen warning?**
-Click **More info → Run anyway**. This appears because the app is not yet code-signed with a paid certificate — it is safe.
+Click **More info → Run anyway**. This appears because the app is not yet code-signed — it is safe.
 
 ---
 
