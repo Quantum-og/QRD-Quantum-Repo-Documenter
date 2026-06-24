@@ -125,48 +125,105 @@ export const BackendStatus: React.FC = () => {
 
   // ── Install error screen ──────────────────────────────────────────────────
   if (install.phase === 'error') {
+    const platform = window.electron?.platform ?? 'unknown';
+    const isWin = platform === 'win32';
+    const isMac = platform === 'darwin';
+
     return (
       <Box
         sx={{
           position: 'fixed', inset: 0, zIndex: 9999,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          bgcolor: 'background.default',
+          bgcolor: 'background.default', p: 2, overflowY: 'auto',
         }}
       >
-        <Paper elevation={3} sx={{ p: 5, maxWidth: 500, width: '90%', textAlign: 'center', borderRadius: 3 }}>
+        <Paper elevation={3} sx={{ p: 4, maxWidth: 560, width: '100%', borderRadius: 3 }}>
+
+          {/* Header */}
           <Typography variant="h5" fontWeight={700} color="error" gutterBottom>
-            Setup Failed
+            ⚠️ Python Not Found
           </Typography>
-
           <Typography variant="body2" color="text.secondary" mb={2}>
-            RepoDoc Pro could not install its Python dependencies.
-            Please make sure <strong>Python 3.10 or newer</strong> is installed on your system.
+            RepoDoc Pro needs <strong>Python 3.10 or newer</strong> to run.
+            Follow the steps below for your system, then restart the app.
           </Typography>
 
-          <Alert severity="error" sx={{ textAlign: 'left', mb: 3, fontFamily: 'monospace', fontSize: 12 }}>
+          {/* Error detail */}
+          <Alert severity="error" sx={{ mb: 3, fontFamily: 'monospace', fontSize: 11 }}>
             {install.message}
           </Alert>
 
-          <Typography variant="body2" color="text.secondary" mb={3}>
-            Download Python from{' '}
-            <Typography
-              component="span"
-              variant="body2"
-              color="primary"
-              sx={{ cursor: 'pointer', textDecoration: 'underline' }}
+          {/* Windows steps */}
+          {isWin && (
+            <Alert severity="info" sx={{ mb: 2, textAlign: 'left' }}>
+              <strong>Windows — Install Python:</strong>
+              <ol style={{ margin: '8px 0 0 0', paddingLeft: 20 }}>
+                <li>Click the button below to open <strong>python.org/downloads</strong></li>
+                <li>Download <strong>Python 3.11</strong> (or newer)</li>
+                <li>Run the installer</li>
+                <li style={{ color: '#d32f2f' }}><strong>⚠️ Check "Add Python to PATH"</strong> before clicking Install</li>
+                <li>Restart RepoDoc Pro</li>
+              </ol>
+            </Alert>
+          )}
+
+          {/* macOS steps */}
+          {isMac && (
+            <Alert severity="info" sx={{ mb: 2, textAlign: 'left' }}>
+              <strong>macOS — Install Python:</strong>
+              <ol style={{ margin: '8px 0 0 0', paddingLeft: 20 }}>
+                <li>Open <strong>Terminal</strong> (Cmd + Space → type Terminal)</li>
+                <li>Run this command:<br/>
+                  <code style={{ background: '#f5f5f5', padding: '2px 6px', borderRadius: 4 }}>
+                    brew install python3
+                  </code>
+                </li>
+                <li>If you don't have Homebrew, click the button below to download Python directly</li>
+                <li>Restart RepoDoc Pro</li>
+              </ol>
+            </Alert>
+          )}
+
+          {/* Linux steps */}
+          {!isWin && !isMac && (
+            <Alert severity="info" sx={{ mb: 2, textAlign: 'left' }}>
+              <strong>Linux — Install Python:</strong>
+              <ol style={{ margin: '8px 0 0 0', paddingLeft: 20 }}>
+                <li>Open a <strong>Terminal</strong></li>
+                <li>Run the command for your distro:<br/>
+                  <code style={{ display: 'block', background: '#f5f5f5', padding: '4px 8px', borderRadius: 4, margin: '4px 0', fontSize: 12 }}>
+                    Ubuntu/Debian: sudo apt install python3 python3-venv
+                  </code>
+                  <code style={{ display: 'block', background: '#f5f5f5', padding: '4px 8px', borderRadius: 4, margin: '4px 0', fontSize: 12 }}>
+                    Fedora: sudo dnf install python3
+                  </code>
+                  <code style={{ display: 'block', background: '#f5f5f5', padding: '4px 8px', borderRadius: 4, margin: '4px 0', fontSize: 12 }}>
+                    Arch: sudo pacman -S python
+                  </code>
+                </li>
+                <li>Restart RepoDoc Pro</li>
+              </ol>
+            </Alert>
+          )}
+
+          {/* Actions */}
+          <Stack direction="row" spacing={2} mt={2}>
+            <Button
+              variant="contained"
+              fullWidth
               onClick={() => window.electron?.openPath('https://python.org/downloads')}
             >
-              python.org/downloads
-            </Typography>
-            {' '}then restart the app.
-          </Typography>
+              Download Python
+            </Button>
+            <Button
+              variant="outlined"
+              fullWidth
+              onClick={() => window.electron?.restartBackend().then(() => setInstall({ phase: 'idle' }))}
+            >
+              Retry
+            </Button>
+          </Stack>
 
-          <Button
-            variant="contained"
-            onClick={() => window.electron?.restartBackend().then(() => setInstall({ phase: 'idle' }))}
-          >
-            Retry
-          </Button>
         </Paper>
       </Box>
     );
